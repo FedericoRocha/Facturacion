@@ -1,8 +1,6 @@
 [server]
-address = "localhost"
-port = 5000
-enableCORS = true
 headless = true
+enableCORS = true
 
 [theme]
 primaryColor = "#1f77b4"

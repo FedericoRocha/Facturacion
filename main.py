@@ -5,27 +5,10 @@ import data_manager as dm
 import visualizations as viz
 import utils
 import logging
-import requests
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# URL de la API
-API_URL = "http://localhost:8000"
-
-def sincronizar_datos_con_api():
-    """Sincroniza los datos de Streamlit con la API."""
-    try:
-        if 'datos_financieros' in st.session_state:
-            datos = st.session_state.datos_financieros.to_dict(orient='records')
-            response = requests.post(f"{API_URL}/actualizar_datos", json={'datos': datos})
-            if response.status_code == 200:
-                logger.info("Datos sincronizados con la API correctamente")
-            else:
-                logger.error(f"Error al sincronizar datos: {response.text}")
-    except Exception as e:
-        logger.error(f"Error al sincronizar datos con la API: {str(e)}")
 
 # Configuración de la página
 try:
@@ -86,7 +69,7 @@ def mostrar_ingreso_datos():
         # Primera fila: Mes, Año y Gastos operativos
         with col1:
             # Selector de mes
-            meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+            meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
             mes = st.selectbox(
                 "Mes",
@@ -166,7 +149,7 @@ def mostrar_ingreso_datos():
         if submitted:
             # Crear fecha para el primer día del mes seleccionado
             mes_num = meses.index(mes) + 1
-            fecha = pd.Timestamp(año, mes_num, 1).strftime("%Y-%m-%d")
+            fecha = pd.Timestamp(año, mes_num, 1)
 
             datos = {
                 'facturacion_a': facturacion_a,
@@ -184,9 +167,8 @@ def mostrar_ingreso_datos():
                     datos
                 )
                 st.session_state.datos_financieros = nuevo_registro
-                sincronizar_datos_con_api()  # Sincronizar con la API
                 st.success("✅ Datos guardados exitosamente!")
-                logger.info("Datos guardados y sincronizados correctamente")
+                logger.info("Datos guardados correctamente")
             except Exception as e:
                 logger.error(f"Error al guardar los datos: {str(e)}")
                 st.error("Error al guardar los datos")
